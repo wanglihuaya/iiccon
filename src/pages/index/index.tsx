@@ -1,51 +1,72 @@
-import { Button, Input } from "@nutui/nutui-react-taro";
-import { useState } from "@taro-hooks/core";
+import { Button, Grid } from "@nutui/nutui-react-taro";
 import { View } from "@tarojs/components";
-import { clsx } from "clsx";
 import { useEnv } from "taro-hooks";
-import "./index.scss";
 
-const Index = () => {
-  const [flag, setFlag] = useState(true);
+import { getTestData } from "@/services";
+import { useEffect } from "react";
+import "./index.less";
+
+function Index() {
   const env = useEnv();
 
-  const className = clsx(
-    flag ? "bg-[#123456]" : "bg-[#654321]",
-    "text-white",
-    "after:content-['click_here_to_switch_className']"
-  );
-  const logoClass = clsx(
-    "bg-[url(https://pic1.zhimg.com/v2-3ee20468f54bbfefcd0027283b21aaa8_720w.jpg)] bg-[length:100%_100%] bg-no-repeat w-screen h-[41.54vw]"
-  );
-  return (
-    <>
-      <View>current env: {env}</View>
-      <Input placeholder="请输入文本" />
-      <Button type="primary">主要按sss钮</Button>
-      <View className={logoClass}></View>
-      <View className="[&_.u-count-down\_\_text]:!text-sky-400">
-        <View></View>
-        <View>
-          <View className="u-count-down__text text-[50px] text-center before:content-['taro-react-tailwind-vscode-template']"></View>
-        </View>
-      </View>
-      <View className="space-y-4">
-        <View className="after:content-['这是一个小程序taro_react_tailwindcss的模板'] after:ml-0.5 after:text-lime-700"></View>
-        <View
-          className="bg-gray-100 dark:bg-zinc-800 h-20 w-40 after:text-xs after:content-['this_is_a_hover_block.have_a_try!']"
-          hoverClass="bg-red-500 dark:bg-green-500"
-        ></View>
+  const init = async () => {
+    try {
+      const res = await getTestData("1");
+      console.log(res);
+    } catch (error) {}
+  };
+  useEffect(() => {}, [init()]);
 
-        <View
-          className={className}
-          onClick={() => {
-            setFlag(!flag);
-          }}
-        ></View>
-        <View className="test mx-auto"></View>
+  return (
+    <View className="nutui-react-demo">
+      <View className="index">欢迎使用 NutUI React 开发 Taro 多端项目。</View>
+      <View className="index">当前环境: {env}</View>
+      <View className="index">
+        <Button type="primary" className="btn">
+          NutUI React Button
+        </Button>
       </View>
-    </>
+      <div className="text-5xl fw100 animate-bounce-alt animate-count-infinite animate-duration-1s">
+        UnoCSS
+      </div>
+      <View className="op30 text-lg fw300 m1">
+        The instant on-demand Atomic CSS engine.
+      </View>
+      <View className="w-md h-md i-carbon-logo-github" />
+      <Grid>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-after-effects" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-animate" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-dreamweaver" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-illustrator" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-incopy" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-indesign" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-lightroom" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-photoshop" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-premiere" />
+        </Grid.Item>
+        <Grid.Item>
+          <View className="w-[100px] h-[100px] i-logos-adobe-xd" />
+        </Grid.Item>
+      </Grid>
+    </View>
   );
-};
+}
 
 export default Index;

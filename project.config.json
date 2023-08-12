@@ -1,12 +1,12 @@
 {
   "miniprogramRoot": "dist/",
-  "projectname": "taro-react-tailwind-vscode-template",
-  "description": "",
+  "projectname": "taroTest",
+  "description": "nutui",
   "appid": "wx688c9b90ad74b42b",
   "setting": {
     "urlCheck": true,
-    "es6": true,
-    "enhance": true,
+    "es6": false,
+    "enhance": false,
     "compileHotReLoad": false,
     "postcss": false,
     "minified": false,
@@ -15,7 +15,7 @@
       "disablePlugins": [],
       "outputPath": ""
     },
-    "condition": true
+    "condition": false
   },
   "compileType": "miniprogram",
   "libVersion": "3.0.0",

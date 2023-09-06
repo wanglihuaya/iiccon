@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-named-as-default
 import presetIcons from "@unocss/preset-icons";
 import { defineConfig, transformerDirectives } from "unocss";
-import presetWeapp from "unocss-preset-weapp";
+import { presetWeapp } from "unocss-preset-weapp";
 import { transformerClass } from "unocss-preset-weapp/transformer";
 
 export default defineConfig({
@@ -28,7 +28,7 @@ export default defineConfig({
   ],
   content: {
     pipeline: {
-      include: [/\.([jt]sx|css)($|\?)/],
+      include: [/\.([jt]sx|css|less)($|\?)/],
       exclude: [],
     },
   },

@@ -9,6 +9,7 @@ module.exports = {
         ts: true,
       },
     ],
+    "@linaria", // 添加到 babel-preset
   ],
   plugins: [
     [

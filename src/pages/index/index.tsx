@@ -3,19 +3,24 @@ import { View } from "@tarojs/components";
 import { useEnv } from "taro-hooks";
 
 import { getTestData } from "@/services";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./index.less";
 
 function Index() {
   const env = useEnv();
+  const [cssData, setCssData] = useState({} as any);
 
   const init = async () => {
     try {
-      const res = await getTestData("1");
-      console.log(res);
+      const res = await getTestData();
+      const matches = res.match(/url\((.*)\);/)[1];
+      setCssData(matches);
     } catch (error) {}
   };
-  useEffect(() => {}, [init()]);
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <View className="nutui-react-demo">
@@ -26,9 +31,19 @@ function Index() {
           NutUI React Button
         </Button>
       </View>
-      <div className="text-5xl fw100 animate-bounce-alt animate-count-infinite animate-duration-1s">
+      <View className="text-5xl fw100 animate-bounce-alt animate-count-infinite animate-duration-1s">
         UnoCSS
-      </div>
+      </View>
+      <View
+        style={{
+          backgroundImage: `url(${cssData})`,
+          backgroundSize: "cover",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center",
+        }}
+        className="w-[100px] h-[100px]"
+      />
+      {/* <Image src="https://api.iconify.design/fluent-emoji-flat/alarm-clock.svg" /> */}
       <View className="op30 text-lg fw300 m1">
         The instant on-demand Atomic CSS engine.
       </View>

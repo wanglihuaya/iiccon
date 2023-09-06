@@ -61,6 +61,13 @@ const config = {
     webpackChain(chain) {
       // https://github.com/unocss/unocss
       chain.plugin("unocss").use(UnoCSS());
+      chain.module
+        .rule("script")
+        .use("linariaLoader")
+        .loader("@linaria/webpack-loader")
+        .options({
+          sourceMap: process.env.NODE_ENV !== "production",
+        });
     },
   },
   h5: {
@@ -89,6 +96,13 @@ const config = {
     webpackChain(chain) {
       // https://github.com/unocss/unocss
       chain.plugin("unocss").use(UnoCSS());
+      chain.module
+        .rule("script")
+        .use("linariaLoader")
+        .loader("@linaria/webpack-loader")
+        .options({
+          sourceMap: process.env.NODE_ENV !== "production",
+        });
     },
   },
 };

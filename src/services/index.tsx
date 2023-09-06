@@ -1,10 +1,8 @@
 import request from "../utils/request";
 
-export async function getTestData(date: string) {
+export async function getTestData() {
   return request.get({
-    url: "https://jsonplaceholder.typicode.com/posts",
-    data: {
-      date,
-    },
+    // url: "https://icones.netlify.app/collections/bxl-meta.json",
+    url: "https://api.iconify.design/openmoji.css?icons=apple",
   });
 }

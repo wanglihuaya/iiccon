@@ -39,6 +39,10 @@
   "dependencies": {
     "@babel/runtime": "^7.7.7",
     "@iconify/json": "^2.2.100",
+    "@linaria/babel-preset": "^4.5.4",
+    "@linaria/core": "^4.5.4",
+    "@linaria/react": "^4.5.4",
+    "@linaria/webpack-loader": "^4.5.4",
     "@nutui/nutui-react-taro": "^2.0.0",
     "@taro-hooks/plugin-react": "^2.0.4",
     "@tarojs/components": "3.6.11",

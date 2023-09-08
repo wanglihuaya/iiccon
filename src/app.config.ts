@@ -12,7 +12,7 @@ export default defineAppConfig({
       },
     ],
   },
-  pages: ["pages/index/index", "pages/test/index"],
+  pages: ["pages/index/index", "pages/test/index", "pages/icones/index"],
   window: {
     backgroundTextStyle: "light",
     navigationBarBackgroundColor: "#fff",

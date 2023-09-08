@@ -10,7 +10,7 @@ export default function CustomTabBar() {
   const isTest = path === "/pages/test/index";
 
   return (
-    <View className="customTabBar flex justify-between items-center rounded-full fixed bottom-64 left-[20%] right-0 w-[60%] text-black">
+    <View className="customTabBar border-2 border-[rgb(194, 194, 194)] border-solid flex justify-between items-center rounded-full fixed bottom-64 left-[20%] right-0 w-[60%] text-black">
       <View
         className="w-[50%] text-center h-[100px] line-height-[100px] center"
         onClick={() => {

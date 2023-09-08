@@ -1,13 +1,13 @@
-import { Button, Grid, Overlay } from "@nutui/nutui-react-taro";
+import { Cell, Overlay } from "@nutui/nutui-react-taro";
 import { Image, View } from "@tarojs/components";
-import { useEnv } from "taro-hooks";
 
 import { getTestData, getTestData1, getTestData2 } from "@/services";
+import Taro from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import "./index.less";
 
 function Index() {
-  const env = useEnv();
+  const [iconTypes, setIconTypes] = useState([]);
   const [cssData, setCssData] = useState({} as any);
   const [iconList, setIconList] = useState([] as any);
   const [visible, setVisible] = useState(false);
@@ -17,36 +17,66 @@ function Index() {
     const nowIconList: any = [];
     try {
       const res = await getTestData();
-      // 所有的类比的名字
+
       const res1 = await getTestData1();
+
+      // console.log("res", res1, Object.keys(res1).length);
+      const allType = Array.from(
+        new Set(
+          Object.keys(res1).map((item) => {
+            return res1[item].category;
+          })
+        )
+      );
+      // 将所有的 icon 分类
+      allType.forEach((item) => {
+        const _list = Object.keys(res1).filter((item1) => {
+          return res1[item1].category === item;
+        });
+        // console.log("item", item, _list);
+        let icones: any = [];
+        _list.forEach((item1) => {
+          icones.push({
+            name: item1,
+            license: res1[item1].license,
+            author: res1[item1].author,
+            total: res1[item1].total,
+            category: res1[item1].category,
+            samples: res1[item1].samples,
+          });
+        });
+        // console.log("icones", icones);
+        nowIconList.push({
+          type: item,
+          list: icones,
+          number: _list.length,
+        });
+      });
+      // console.log("nowIconList", nowIconList);
+      setIconTypes(nowIconList);
+
       // 获取 res1 所有的 key
       const setList = Object.keys(res1).slice(0, 5);
-      setList.forEach(async (item) => {
-        // 每一个类别的所有的 icon的名字
+      const requests = setList.map(async (item) => {
         const res2: any = await getTestData2(item);
-        if (res2) {
-          const list: any = [];
-          if (res2?.uncategorized?.length > 0) {
-            list.push(...res2?.uncategorized.flat());
-          }
-          if (res2?.hidden?.length > 0) {
-            list.push(...res2?.hidden.flat());
-          }
-          if (res2?.categories && Object.values(res2?.categories)?.length > 0) {
-            const _list = Object.values(res2?.categories)?.map((_item) => {
-              return _item;
-            });
-            list.push(..._list.flat());
-          }
-
-          nowIconList.push({
-            name: item,
-            list: list,
-          });
-          console.log("nowIconList", nowIconList.length);
-          setIconList(nowIconList);
-        }
+        console.log("res2", res2);
+        return {
+          name: item,
+          title: res2.title,
+          categories: res2?.categories,
+          prefixes: res2?.prefixes,
+          uncategorized: res2?.uncategorized,
+          hidden: res2?.hidden,
+          aliases: res2?.aliases,
+          suffixes: res2?.suffixes,
+        };
       });
+
+      Promise.all(requests).then((resAll) => {
+        console.log(resAll);
+        setIconList(resAll);
+      });
+
       const matches = res.match(/url\((.*)\);/)[1];
       setCssData(matches);
     } catch (error) {
@@ -59,10 +89,9 @@ function Index() {
   }, []);
 
   return (
-    <View className="nutui-react-demo">
-      <View className="index">欢迎使用 NutUI React 开发 Taro 多端项目。</View>
-      <View className="index">当前环境: {env}</View>
-      <View className="index">
+    <View className="mb-32 p-4">
+      asdasd
+      {/* <View className="index">
         <Button
           type="primary"
           className="btn"
@@ -75,8 +104,8 @@ function Index() {
       </View>
       <View className="text-5xl fw100 animate-bounce-alt animate-count-infinite animate-duration-1s">
         UnoCSS
-      </View>
-      <View
+      </View> */}
+      {/* <View
         style={{
           backgroundImage: `url(${cssData})`,
           backgroundSize: "cover",
@@ -84,38 +113,121 @@ function Index() {
           backgroundPosition: "center",
         }}
         className="w-[100px] h-[100px]"
-      />
+      /> */}
+      {iconTypes.map((item: any, index) => {
+        return (
+          <View key={index}>
+            <View className="text-2xl">{item.type}</View>
+            <View>{item.number}个</View>
+            <View>
+              {item?.list?.map((item1, index1) => {
+                return (
+                  <View
+                    key={index1 + index}
+                    onClick={() => {
+                      Taro.navigateTo({
+                        url: `/pages/icones/index?type=${item1.name}&author=${item1?.author?.name}&license=${item1?.license?.title}&total=${item1?.total}`,
+                      });
+                    }}
+                  >
+                    <Cell
+                      title={item1.name}
+                      description={
+                        <>
+                          <View>{item1?.author?.name}</View>
+                          <View>{item1?.license?.title}</View>
+                          <View>{item1?.total} icones</View>
+                        </>
+                      }
+                      extra="描述文字"
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          </View>
+        );
+      })}
       {/* <Image src="https://api.iconify.design/fluent-emoji-flat/alarm-clock.svg" /> */}
-
-      <Grid>
+      {/* {iconList.map((item: any, index) => {
+        return (
+          <View key={index}>
+            <View className="text-2xl">{item.title}</View>
+            <View>
+              {item?.categories &&
+                Object.keys(item?.categories)?.length > 0 &&
+                Object.keys(item?.categories).map((item1, index1) => {
+                  return (
+                    <View key={index1 + index}>
+                      <View>{item1}</View>
+                    </View>
+                  );
+                })}
+              {item?.suffixes &&
+                Object.keys(item?.suffixes)?.length > 0 &&
+                Object.keys(item?.suffixes).map((item1, index1) => {
+                  return (
+                    <View key={index1 + index}>
+                      <View>{item1}</View>
+                    </View>
+                  );
+                })}
+              {item?.prefixes &&
+                Object.keys(item?.prefixes)?.length > 0 &&
+                Object.keys(item?.prefixes).map((item1, index1) => {
+                  return (
+                    <View key={index1 + index}>
+                      <View>{item1}</View>
+                    </View>
+                  );
+                })}
+            </View>
+          </View>
+        );
+      })} */}
+      {/* <Grid>
+        <Grid.Item>
+          <Image
+            lazyLoad
+            fadeIn
+            showMenuByLongpress
+            className="w-[70px] h-[70px]"
+            src={`https://api.iconify.design/${
+              Object.keys(item?.categories)[0]
+            }/${item1}.svg`}
+          />
+        </Grid.Item>
+      </Grid> */}
+      {/* <Grid>
         {iconList.map((item: any, index) => {
           const _list = item.list.slice(0, 500);
           return _list.map((item1: any, index1) => {
             return (
-              <Grid.Item
-                key={index1 + index}
-                onClick={() => {
-                  setVisible(true);
-                  setSelectIcon(
-                    `https://api.iconify.design/${item.name}/${item1}.svg`
-                  );
-                }}
-              >
-                <Image
-                  lazyLoad
-                  fadeIn
-                  showMenuByLongpress
-                  className="w-[70px] h-[70px]"
-                  src={`https://api.iconify.design/${item.name}/${item1}.svg`}
-                />
-                {/* <View className="w-[100px] h-[100px]">
-                    <View className={item1} />
-                  </View> */}
-              </Grid.Item>
+              <View key={index1 + index}>
+                {item.title && (
+                  <View className="text-2xl text-center">{item.title}</View>
+                )}
+                <Grid.Item
+                  onClick={() => {
+                    setVisible(true);
+                    setSelectIcon(
+                      `https://api.iconify.design/${item.name}/${item1}.svg`
+                    );
+                  }}
+                >
+                  <Image
+                    lazyLoad
+                    fadeIn
+                    showMenuByLongpress
+                    className="w-[70px] h-[70px]"
+                    src={`https://api.iconify.design/${item.name}/${item1}.svg`}
+                  />
+                </Grid.Item>
+              </View>
             );
           });
         })}
-      </Grid>
+      </Grid> */}
       <Overlay
         visible={visible}
         onClick={() => {
@@ -130,7 +242,7 @@ function Index() {
           lazyLoad
           fadeIn
           showMenuByLongpress
-          className="  w-[500px] h-[500px]"
+          className="backdrop-blur-sm rounded-full bg-white/50  w-[500px] h-[500px] p-12"
           src={selectIcon}
         />
       </Overlay>

@@ -1,4 +1,4 @@
-import { Cell, Overlay } from "@nutui/nutui-react-taro";
+import { Cell } from "@nutui/nutui-react-taro";
 import { Image, View } from "@tarojs/components";
 
 import { getTestData, getTestData1, getTestData2 } from "@/services";
@@ -8,10 +8,8 @@ import "./index.less";
 
 function Index() {
   const [iconTypes, setIconTypes] = useState([]);
+  const [iconNine, setIconNine] = useState<any>([]);
   const [cssData, setCssData] = useState({} as any);
-  const [iconList, setIconList] = useState([] as any);
-  const [visible, setVisible] = useState(false);
-  const [selectIcon, setSelectIcon] = useState("");
 
   const init = async () => {
     const nowIconList: any = [];
@@ -56,41 +54,47 @@ function Index() {
       setIconTypes(nowIconList);
 
       // 获取 res1 所有的 key
-      const setList = Object.keys(res1).slice(0, 5);
-      const requests = setList.map(async (item) => {
+      // const setList = Object.keys(res1).slice(0, 5);
+      const requests = Object.keys(res1).map(async (item) => {
         const res2: any = await getTestData2(item);
-        console.log("res2", res2);
+        let iconesNine = [];
+        if (res2?.uncategorized?.length > 0) {
+          iconesNine = res2.uncategorized.slice(0, 9);
+        } else if (
+          res2?.categories &&
+          Object.keys(res2?.categories)?.length > 0
+        ) {
+          iconesNine = res2?.categories[Object.keys(res2?.categories)[0]].slice(
+            0,
+            9
+          );
+        }
         return {
-          name: item,
-          title: res2.title,
-          categories: res2?.categories,
-          prefixes: res2?.prefixes,
-          uncategorized: res2?.uncategorized,
-          hidden: res2?.hidden,
-          aliases: res2?.aliases,
-          suffixes: res2?.suffixes,
+          type: item,
+          iconesNine,
         };
       });
 
       Promise.all(requests).then((resAll) => {
-        console.log(resAll);
-        setIconList(resAll);
+        // console.log(resAll);
+        setIconNine(resAll);
       });
 
       const matches = res.match(/url\((.*)\);/)[1];
       setCssData(matches);
-    } catch (error) {
-    } finally {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
     init();
   }, []);
 
+  const iconNineList = (typeName: string) => {
+    return iconNine?.find((item) => item.type === typeName)?.iconesNine;
+  };
+
   return (
     <View className="mb-32 p-4">
-      asdasd
       {/* <View className="index">
         <Button
           type="primary"
@@ -118,134 +122,52 @@ function Index() {
         return (
           <View key={index}>
             <View className="text-2xl">{item.type}</View>
-            <View>{item.number}个</View>
-            <View>
-              {item?.list?.map((item1, index1) => {
-                return (
-                  <View
-                    key={index1 + index}
-                    onClick={() => {
-                      Taro.navigateTo({
-                        url: `/pages/icones/index?type=${item1.name}&author=${item1?.author?.name}&license=${item1?.license?.title}&total=${item1?.total}`,
-                      });
-                    }}
-                  >
-                    <Cell
-                      title={item1.name}
-                      description={
-                        <>
-                          <View>{item1?.author?.name}</View>
-                          <View>{item1?.license?.title}</View>
-                          <View>{item1?.total} icones</View>
-                        </>
-                      }
-                      extra="描述文字"
-                    />
-                  </View>
-                );
-              })}
-            </View>
+            <View className="text-xs text-[#666]">{item.number} types</View>
+            {item?.list?.map((item1, index1) => {
+              return (
+                <View
+                  key={index1 + index}
+                  onClick={() => {
+                    Taro.navigateTo({
+                      url: `/pages/icones/index?type=${item1.name}&author=${item1?.author?.name}&license=${item1?.license?.title}&total=${item1?.total}`,
+                    });
+                  }}
+                >
+                  <Cell
+                    className="border-2 border-[#e2e2e2] border-solid"
+                    title={item1.name}
+                    description={
+                      <>
+                        <View>{item1?.author?.name}</View>
+                        <View>{item1?.license?.title}</View>
+                        <View>{item1?.total} icones</View>
+                      </>
+                    }
+                    extra={
+                      <View className="flex flex-wrap gap-2 w-[160px]">
+                        {/* iconNine 中的 item1.name */}
+                        {iconNineList(item1.name)?.map((item2, index2) => {
+                          return (
+                            <Image
+                              key={index2 + "iconNine"}
+                              lazyLoad
+                              fadeIn
+                              showMenuByLongpress
+                              className="w-[40px] h-[40px]"
+                              src={`https://api.iconify.design/${item1.name}/${item2}.svg`}
+                            />
+                          );
+                        })}
+                      </View>
+                    }
+                  />
+                </View>
+              );
+            })}
           </View>
         );
       })}
       {/* <Image src="https://api.iconify.design/fluent-emoji-flat/alarm-clock.svg" /> */}
-      {/* {iconList.map((item: any, index) => {
-        return (
-          <View key={index}>
-            <View className="text-2xl">{item.title}</View>
-            <View>
-              {item?.categories &&
-                Object.keys(item?.categories)?.length > 0 &&
-                Object.keys(item?.categories).map((item1, index1) => {
-                  return (
-                    <View key={index1 + index}>
-                      <View>{item1}</View>
-                    </View>
-                  );
-                })}
-              {item?.suffixes &&
-                Object.keys(item?.suffixes)?.length > 0 &&
-                Object.keys(item?.suffixes).map((item1, index1) => {
-                  return (
-                    <View key={index1 + index}>
-                      <View>{item1}</View>
-                    </View>
-                  );
-                })}
-              {item?.prefixes &&
-                Object.keys(item?.prefixes)?.length > 0 &&
-                Object.keys(item?.prefixes).map((item1, index1) => {
-                  return (
-                    <View key={index1 + index}>
-                      <View>{item1}</View>
-                    </View>
-                  );
-                })}
-            </View>
-          </View>
-        );
-      })} */}
-      {/* <Grid>
-        <Grid.Item>
-          <Image
-            lazyLoad
-            fadeIn
-            showMenuByLongpress
-            className="w-[70px] h-[70px]"
-            src={`https://api.iconify.design/${
-              Object.keys(item?.categories)[0]
-            }/${item1}.svg`}
-          />
-        </Grid.Item>
-      </Grid> */}
-      {/* <Grid>
-        {iconList.map((item: any, index) => {
-          const _list = item.list.slice(0, 500);
-          return _list.map((item1: any, index1) => {
-            return (
-              <View key={index1 + index}>
-                {item.title && (
-                  <View className="text-2xl text-center">{item.title}</View>
-                )}
-                <Grid.Item
-                  onClick={() => {
-                    setVisible(true);
-                    setSelectIcon(
-                      `https://api.iconify.design/${item.name}/${item1}.svg`
-                    );
-                  }}
-                >
-                  <Image
-                    lazyLoad
-                    fadeIn
-                    showMenuByLongpress
-                    className="w-[70px] h-[70px]"
-                    src={`https://api.iconify.design/${item.name}/${item1}.svg`}
-                  />
-                </Grid.Item>
-              </View>
-            );
-          });
-        })}
-      </Grid> */}
-      <Overlay
-        visible={visible}
-        onClick={() => {
-          setVisible(false);
-        }}
-        className="center"
-      >
-        <Image
-          onClick={() => {
-            setVisible(false);
-          }}
-          lazyLoad
-          fadeIn
-          showMenuByLongpress
-          className="backdrop-blur-sm rounded-full bg-white/50  w-[500px] h-[500px] p-12"
-          src={selectIcon}
-        />
-      </Overlay>
     </View>
   );
 }

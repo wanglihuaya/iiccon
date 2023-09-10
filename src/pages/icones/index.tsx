@@ -19,13 +19,10 @@ function Icones() {
     name: "",
   });
 
-  console.log(Taro.getCurrentInstance()?.page);
-
   const init = async () => {
     if (!type) return;
     const iconesRes: any = await getTestData2(type as string);
     setIcones(iconesRes);
-    console.log("iconesRes", iconesRes);
   };
 
   useEffect(() => {
@@ -103,18 +100,20 @@ function Icones() {
                   onClick={() => {
                     setVisible(true);
                     setSelectIcon({
-                      src: `https://api.iconify.design/${type}/${item}.svg`,
+                      src: `https://commands.top/api/collection/${type}/${item}`,
                       name: item,
                     });
                   }}
                 >
-                  <Image
-                    lazyLoad
-                    fadeIn
-                    showMenuByLongpress
-                    className="w-[50px] h-[50px]"
-                    src={`https://api.iconify.design/${type}/${item}.svg`}
-                  />
+                  {type && item && (
+                    <Image
+                      // lazyLoad
+                      // fadeIn
+                      // showMenuByLongpress
+                      className="w-[50px] h-[50px]"
+                      src={`https://commands.top/api/collection/${type}/${item}`}
+                    />
+                  )}
                 </Grid.Item>
               );
             })}
@@ -131,9 +130,9 @@ function Icones() {
           onClick={() => {
             setVisible(false);
           }}
-          lazyLoad
-          fadeIn
-          showMenuByLongpress
+          // lazyLoad
+          // fadeIn
+          // showMenuByLongpress
           className="rounded-full bg-white/50  w-[500px] h-[500px] p-12"
           src={selectIcon?.src}
         />

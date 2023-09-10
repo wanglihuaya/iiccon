@@ -5,7 +5,6 @@ import "./index.less";
 
 export default function CustomTabBar() {
   const { path } = Taro.getCurrentInstance().router;
-  console.log(path);
   const isIndex = path === "/pages/index/index";
   const isTest = path === "/pages/test/index";
 

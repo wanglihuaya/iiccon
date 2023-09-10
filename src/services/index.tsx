@@ -8,13 +8,12 @@ export async function getTestData() {
 }
 export async function getTestData1() {
   return request.get({
-    url: "https://api.iconify.design/collections",
+    url: "https://commands.top/api/collections",
   });
 }
 
 export async function getTestData2(item: string) {
   return request.get({
-    // url: `https://api.iconify.design/collections?prefixes=${item}&pretty=1`,
-    url: `https://api.iconify.design/collection?prefix=${item}&pretty=1`,
+    url: `https://commands.top/api/collection/${item}`,
   });
 }

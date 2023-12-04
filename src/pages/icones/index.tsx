@@ -100,7 +100,7 @@ function Icones() {
                   onClick={() => {
                     setVisible(true);
                     setSelectIcon({
-                      src: `https://commands.top/api/collection/${type}/${item}`,
+                      src: `https://api.commands.top/api/collection/${type}/${item}`,
                       name: item,
                     });
                   }}
@@ -111,7 +111,7 @@ function Icones() {
                       // fadeIn
                       // showMenuByLongpress
                       className="w-[50px] h-[50px]"
-                      src={`https://commands.top/api/collection/${type}/${item}`}
+                      src={`https://api.commands.top/api/collection/${type}/${item}`}
                     />
                   )}
                 </Grid.Item>

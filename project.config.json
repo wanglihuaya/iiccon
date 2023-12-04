@@ -1,32 +1,35 @@
 {
   "miniprogramRoot": "dist/",
-  "projectname": "taroTest",
   "description": "nutui",
   "appid": "wx688c9b90ad74b42b",
   "setting": {
     "urlCheck": true,
-    "es6": false,
-    "enhance": false,
+    "es6": true,
+    "enhance": true,
     "compileHotReLoad": false,
-    "postcss": false,
-    "minified": false,
+    "postcss": true,
+    "minified": true,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
       "outputPath": ""
     },
-    "condition": false
+    "condition": false,
+    "coverView": false,
+    "showShadowRootInWxmlPanel": false,
+    "packNpmRelationList": [],
+    "ignoreUploadUnusedFiles": true
   },
   "compileType": "miniprogram",
-  "libVersion": "3.0.0",
   "srcMiniprogramRoot": "dist/",
-  "packOptions": {
-    "ignore": [],
-    "include": []
-  },
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
+  },
+  "libVersion": "3.0.0",
+  "packOptions": {
+    "ignore": [],
+    "include": []
   }
 }

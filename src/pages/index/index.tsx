@@ -1,7 +1,7 @@
 import { Cell } from "@nutui/nutui-react-taro";
 import { Image, View } from "@tarojs/components";
 
-import { getTestData, getTestData1 } from "@/services";
+import { getTestData1 } from "@/services";
 import Taro from "@tarojs/taro";
 import { useEffect, useState } from "react";
 import "./index.less";
@@ -2095,14 +2095,11 @@ const myIconNineList = [
 
 function Index() {
   const [iconTypes, setIconTypes] = useState([]);
-  const [iconNine, setIconNine] = useState<any>([]);
   const [cssData, setCssData] = useState({} as any);
 
   const init = async () => {
     const nowIconList: any = [];
     try {
-      const res = await getTestData();
-
       const res1 = await getTestData1();
 
       const allType = Array.from(
@@ -2166,9 +2163,6 @@ function Index() {
       //   });
       //   setIconNine(resAll);
       // });
-
-      const matches = res.match(/url\((.*)\);/)[1];
-      setCssData(matches);
     } catch (error) {}
   };
 
@@ -2241,7 +2235,7 @@ function Index() {
                                 lazyLoad
                                 fadeIn
                                 className="w-[40px] h-[40px]"
-                                src={`https://commands.top/api/collection/${item1.name}/${item2}`}
+                                src={`http://49.234.4.94:3000/api/collection/${item1.name}/${item2}`}
                               />
                             );
                           } else {
@@ -2257,7 +2251,7 @@ function Index() {
           </View>
         );
       })}
-      {/* <Image src="https://commands.top/api/collection/fluent-emoji-flat/alarm-clock" /> */}
+      {/* <Image src="http://49.234.4.94:3000/api/collection/fluent-emoji-flat/alarm-clock" /> */}
     </View>
   );
 }

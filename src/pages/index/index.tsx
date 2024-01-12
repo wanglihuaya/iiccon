@@ -1,9 +1,9 @@
-import { Cell } from "@nutui/nutui-react-taro";
+import { Cell, VirtualList } from "@nutui/nutui-react-taro";
 import { Image, View } from "@tarojs/components";
 
 import { getTestData1 } from "@/services";
-import Taro from "@tarojs/taro";
-import { useEffect, useState } from "react";
+import Taro, { useReachBottom } from "@tarojs/taro";
+import { useCallback, useEffect, useState } from "react";
 import "./index.less";
 
 const myIconNineList = [
@@ -19,6 +19,20 @@ const myIconNineList = [
       "avg-time",
       "avg-time-outline",
       "avg-time-outline-rounded",
+    ],
+  },
+  {
+    type: "material-symbols-light",
+    iconesNine: [
+      "123",
+      "360",
+      "10k",
+      "10mp",
+      "30fps-sharp",
+      "1x-mobiledata-badge",
+      "6-ft-apart",
+      "60fps-select",
+      "acute",
     ],
   },
   {
@@ -2095,44 +2109,137 @@ const myIconNineList = [
 
 function Index() {
   const [iconTypes, setIconTypes] = useState([]);
-  const [cssData, setCssData] = useState({} as any);
+  const [nowList, setNowList] = useState([]);
+  const [allList, setAllList] = useState([]);
+
+  const [list, setsourceData] = useState([]);
+  const [pageNo, setPageNo] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const getData = useCallback(() => {
+    const datas = [];
+    const pageSize = 90;
+    for (let i = 10; i < pageSize; i++) {
+      // 从 nowList 中取出数据
+      const item = allList[i];
+      if (item) {
+        datas.push(item);
+      }
+    }
+    console.log("123132", [...list, ...datas]);
+    setsourceData([...list, ...datas]);
+  }, []);
+
+  useEffect(() => {
+    getData();
+    console.log("allList", allList);
+    console.log("isLoading", isLoading);
+  }, [getData, isLoading, pageNo]);
+
+  const itemRender = (item: any, index: number) => {
+    return (
+      <View key={index}>
+        <View className="text-2xl">{item.type}</View>
+        <View className="text-xs text-[#666]">{item.number} types</View>
+        {item?.list?.map((item1, index1) => {
+          return (
+            <View
+              key={index1 + index}
+              onClick={() => {
+                Taro.navigateTo({
+                  url: `/pages/icones/index?type=${item1.name}&author=${item1?.author?.name}&license=${item1?.license?.title}&total=${item1?.total}`,
+                });
+              }}
+            >
+              <Cell
+                className="border-2 border-[#e2e2e2] border-solid"
+                title={item1.name}
+                description={
+                  <>
+                    <View>{item1?.author?.name}</View>
+                    <View>{item1?.license?.title}</View>
+                    <View>{item1?.total} icones</View>
+                  </>
+                }
+                extra={
+                  <View className="flex flex-wrap gap-2 w-[180px]">
+                    {/* iconNine 中的 item1.name */}
+                    {iconNineList(item1.name)?.map((item2, index2) => {
+                      if (item1.name && item2) {
+                        return (
+                          <Image
+                            key={index2 + "iconNine"}
+                            lazyLoad
+                            fadeIn
+                            className="w-[40px] h-[40px]"
+                            src={`https://api.commands.top/api/collection/${item1.name}/${item2}`}
+                          />
+                        );
+                      } else {
+                        return null;
+                      }
+                    })}
+                  </View>
+                }
+              />
+            </View>
+          );
+        })}
+      </View>
+    );
+  };
+
+  const onScroll = () => {
+    if (pageNo > 50 || isLoading) return;
+    setIsLoading(true);
+    setTimeout(() => {
+      setPageNo(pageNo + 1);
+      setIsLoading(false);
+    }, 30);
+  };
 
   const init = async () => {
     const nowIconList: any = [];
     try {
       const res1 = await getTestData1();
-
-      const allType = Array.from(
-        new Set(
-          Object.keys(res1).map((item) => {
-            return res1[item].category;
-          })
-        )
-      );
-      // 将所有的 icon 分类
-      allType.forEach((item) => {
-        const _list = Object.keys(res1).filter((item1) => {
-          return res1[item1].category === item;
-        });
-        let icones: any = [];
-        _list.forEach((item1) => {
-          icones.push({
-            name: item1,
-            license: res1[item1].license,
-            author: res1[item1].author,
-            total: res1[item1].total,
-            category: res1[item1].category,
-            samples: res1[item1].samples,
+      if (res1.length > 0) {
+        const allType = Array.from(
+          new Set(
+            Object.keys(res1).map((item) => {
+              return res1[item].category;
+            })
+          )
+        );
+        // 将所有的 icon 分类
+        allType.forEach((item) => {
+          const _list = Object.keys(res1).filter((item1) => {
+            return res1[item1].category === item;
+          });
+          let icones: any = [];
+          _list.forEach((item1) => {
+            icones.push({
+              name: item1,
+              license: res1[item1].license,
+              author: res1[item1].author,
+              total: res1[item1].total,
+              category: res1[item1].category,
+              samples: res1[item1].samples,
+            });
+          });
+          nowIconList.push({
+            type: item,
+            list: icones,
+            number: _list.length,
           });
         });
-        // console.log("icones", icones);
-        nowIconList.push({
-          type: item,
-          list: icones,
-          number: _list.length,
-        });
-      });
-      setIconTypes(nowIconList);
+        // console.log(nowIconList.map((_item: any) => _item.list).flat());
+        setIconTypes(nowIconList);
+        const _allList = nowIconList.map((_item: any) => _item.list).flat();
+        console.log("_allList", _allList);
+        // 将nowIconList中的 list 展开
+        setAllList(_allList);
+        setIsLoading(false);
+      }
 
       // 获取 res1 所有的 key
       // const setList = Object.keys(res1).slice(0, 5);
@@ -2168,7 +2275,17 @@ function Index() {
 
   useEffect(() => {
     init();
+    setIsLoading(false);
   }, []);
+
+  useReachBottom(() => {
+    console.log("到底了");
+    const _nowList = nowList.concat(
+      iconTypes.slice(nowList.length, nowList.length + 10)
+    );
+    setNowList(_nowList);
+    console.log(_nowList.length);
+  });
 
   const iconNineList = (typeName: string) => {
     return myIconNineList?.find((item) => item.type === typeName)?.iconesNine;
@@ -2176,82 +2293,12 @@ function Index() {
 
   return (
     <View className="mb-32 p-4">
-      {/* <View className="index">
-        <Button
-          type="primary"
-          className="btn"
-          onClick={() => {
-            console.log("click", iconList.length);
-          }}
-        >
-          NutUI React Button
-        </Button>
-      </View>
-      <View className="text-5xl fw100 animate-bounce-alt animate-count-infinite animate-duration-1s">
-        UnoCSS
-      </View> */}
-      {/* <View
-        style={{
-          backgroundImage: `url(${cssData})`,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-        }}
-        className="w-[100px] h-[100px]"
-      /> */}
-      {iconTypes.map((item: any, index) => {
-        return (
-          <View key={index}>
-            <View className="text-2xl">{item.type}</View>
-            <View className="text-xs text-[#666]">{item.number} types</View>
-            {item?.list?.map((item1, index1) => {
-              return (
-                <View
-                  key={index1 + index}
-                  onClick={() => {
-                    Taro.navigateTo({
-                      url: `/pages/icones/index?type=${item1.name}&author=${item1?.author?.name}&license=${item1?.license?.title}&total=${item1?.total}`,
-                    });
-                  }}
-                >
-                  <Cell
-                    className="border-2 border-[#e2e2e2] border-solid"
-                    title={item1.name}
-                    description={
-                      <>
-                        <View>{item1?.author?.name}</View>
-                        <View>{item1?.license?.title}</View>
-                        <View>{item1?.total} icones</View>
-                      </>
-                    }
-                    extra={
-                      <View className="flex flex-wrap gap-2 w-[160px]">
-                        {/* iconNine 中的 item1.name */}
-                        {iconNineList(item1.name)?.map((item2, index2) => {
-                          if (item1.name && item2) {
-                            return (
-                              <Image
-                                key={index2 + "iconNine"}
-                                lazyLoad
-                                fadeIn
-                                className="w-[40px] h-[40px]"
-                                src={`http://49.234.4.94:3000/api/collection/${item1.name}/${item2}`}
-                              />
-                            );
-                          } else {
-                            return null;
-                          }
-                        })}
-                      </View>
-                    }
-                  />
-                </View>
-              );
-            })}
-          </View>
-        );
-      })}
-      {/* <Image src="http://49.234.4.94:3000/api/collection/fluent-emoji-flat/alarm-clock" /> */}
+      <VirtualList
+        itemHeight={50}
+        list={list}
+        itemRender={itemRender}
+        onScroll={onScroll}
+      />
     </View>
   );
 }
